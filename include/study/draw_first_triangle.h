@@ -42,7 +42,7 @@ extern "C"
         UserData mUserData;
 
     public:
-        DrawFirstTriangle(int width, int height) : BaseDraw(width, height)
+        DrawFirstTriangle() : BaseDraw()
         {
         }
         int InitOpenGL();

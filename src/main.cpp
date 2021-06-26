@@ -28,11 +28,11 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 int main()
 {
-	// DrawCreateWindow window(SCR_WIDTH, SCR_HEIGHT);
-	DrawFirstTriangle window(SCR_WIDTH, SCR_HEIGHT);
+	// DrawCreateWindow window;
+	DrawFirstTriangle window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
-	int ret = window.Init();
+	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);
 	std::cout << "init ret: " << ret << std::endl;
 	ret = window.InitOpenGL();
 	std::cout << "initOpenGL ret: " << ret << std::endl;

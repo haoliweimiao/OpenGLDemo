@@ -19,9 +19,10 @@ extern "C"
 
     struct OpenGLContext
     {
-        /// Put your user data here...
+        // Put your user data here...
         void *userData;
 
+        // Create window width and height (px)
         int mScreenWidth;
         int mScreenHeight;
     };
@@ -39,9 +40,9 @@ extern "C"
         DrawCall mDrawCall = NULL;
 
     public:
-        BaseDraw(int width, int height);
+        BaseDraw();
         OpenGLContext mContext;
-        int Init();
+        int Init(int width, int height);
         int InitOpenGL();
         GLFWwindow *getWindow();
         int Draw();
@@ -53,13 +54,10 @@ extern "C"
         ~BaseDraw();
     };
 
-    BaseDraw::BaseDraw(int width, int height)
+    BaseDraw::BaseDraw()
     {
         // Initialize the context
         memset(&mContext, 0, sizeof(OpenGLContext));
-
-        mContext.mScreenWidth = width;
-        mContext.mScreenHeight = height;
     }
 
     BaseDraw::~BaseDraw()
@@ -71,8 +69,14 @@ extern "C"
         return 0;
     }
 
-    int BaseDraw::Init()
+    int BaseDraw::Init(int width, int height)
     {
+        if (width <= 0 || height <= 0)
+        {
+            return -1;
+        }
+        mContext.mScreenWidth = width;
+        mContext.mScreenHeight = height;
 
         // init OpenGL and somethind in here
         glfwInit();

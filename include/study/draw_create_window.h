@@ -18,7 +18,7 @@ extern "C"
     private:
         /* data */
     public:
-        DrawCreateWindow(int width, int height) : BaseDraw(width, height){};
+        DrawCreateWindow() : BaseDraw(){};
         ~DrawCreateWindow();
     };
 
