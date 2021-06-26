@@ -6,14 +6,16 @@
 
 #ifndef BASE_DRAW_H
 #define BASE_DRAW_H
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
 #include <string.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
     typedef struct OpenGLContext OpenGLContext;
 

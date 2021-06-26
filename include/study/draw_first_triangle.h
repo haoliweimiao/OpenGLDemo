@@ -23,7 +23,6 @@ extern "C"
     void DrawTriangle(OpenGLContext context)
     {
         UserDataDrawTriangle *userData = (UserDataDrawTriangle *)context.userData;
-        // BaseDraw::Draw();
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -71,7 +70,6 @@ extern "C"
         {
         }
         int InitOpenGL();
-        int Draw();
         ~DrawFirstTriangle();
     };
 
@@ -159,12 +157,6 @@ extern "C"
 
         BaseDraw::setDrawMethod(DrawTriangle);
         BaseDraw::setDestroyMethod(DrawTriangleDestory);
-        return 0;
-    }
-
-    int DrawFirstTriangle::Draw()
-    {
-        BaseDraw::Draw();
         return 0;
     }
 
