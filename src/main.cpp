@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <study/draw_create_window.h>
+#include <study/draw_first_triangle.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -27,9 +28,14 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 int main()
 {
-	DrawCreateWindow window(SCR_WIDTH, SCR_HEIGHT);
+	// DrawCreateWindow window(SCR_WIDTH, SCR_HEIGHT);
+	DrawFirstTriangle window(SCR_WIDTH, SCR_HEIGHT);
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
-	window.Init();
+	int ret = window.Init();
+	std::cout << "init ret: " << ret << std::endl;
+	ret = window.InitOpenGL();
+	std::cout << "initOpenGL ret: " << ret << std::endl;
+	window.Draw();
 	return 0;
 }

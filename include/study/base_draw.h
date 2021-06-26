@@ -13,48 +13,74 @@ extern "C"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
+#include <string.h>
+
+    typedef struct OpenGLContext OpenGLContext;
+
+    struct OpenGLContext
+    {
+        /// Put your user data here...
+        void *userData;
+
+        int mScreenWidth;
+        int mScreenHeight;
+    };
 
     typedef void (*ProcessInputCallback)(GLFWwindow *);
+
+    typedef void (*DrawCall)(OpenGLContext);
 
     class BaseDraw
     {
     private:
-        int mScreenWidth;
-        int mScreenHeight;
         GLFWwindow *mWindow;
         GLFWframebuffersizefun mBufferCallback = NULL;
         ProcessInputCallback mInputCallback = NULL;
+        DrawCall mDrawCall = NULL;
 
     public:
         BaseDraw(int width, int height);
+        OpenGLContext mContext;
         int Init();
+        int InitOpenGL();
         GLFWwindow *getWindow();
         int Draw();
+        // int DrawMethod();
         int Destory();
         void setFramebufferSizeCallback(GLFWframebuffersizefun callback);
         void setProcessInputCallback(ProcessInputCallback callback);
+        void setDrawMethod(DrawCall method);
         ~BaseDraw();
     };
 
     BaseDraw::BaseDraw(int width, int height)
     {
-        mScreenWidth = width;
-        mScreenHeight = height;
+        // Initialize the context
+        memset(&mContext, 0, sizeof(OpenGLContext));
+
+        mContext.mScreenWidth = width;
+        mContext.mScreenHeight = height;
     }
 
     BaseDraw::~BaseDraw()
     {
     }
 
+    int BaseDraw::InitOpenGL()
+    {
+        return 0;
+    }
+
     int BaseDraw::Init()
     {
+
         // init OpenGL and somethind in here
         glfwInit();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        mWindow = glfwCreateWindow(mScreenWidth, mScreenHeight, "LearnOpenGL", NULL, NULL);
+        mWindow = glfwCreateWindow(mContext.mScreenWidth, mContext.mScreenHeight, "LearnOpenGL", NULL, NULL);
         if (mWindow == NULL)
         {
             std::cout << "Failed to create GLFW window" << std::endl;
@@ -73,18 +99,6 @@ extern "C"
             return -1;
         }
 
-        while (!glfwWindowShouldClose(mWindow))
-        {
-            Draw();
-            if (mInputCallback != NULL)
-            {
-                (*mInputCallback)(mWindow);
-            }
-            glfwSwapBuffers(mWindow);
-            glfwPollEvents();
-        }
-
-        glfwTerminate();
         return 0;
     }
 
@@ -103,9 +117,39 @@ extern "C"
         this->mInputCallback = callback;
     }
 
+    void BaseDraw::setDrawMethod(DrawCall method)
+    {
+        this->mDrawCall = method;
+    }
+
+    // int BaseDraw::DrawMethod()
+    // {
+    //     return 0;
+    // }
+
     int BaseDraw::Draw()
     {
         // draw in here
+        while (!glfwWindowShouldClose(mWindow))
+        {
+            if (mInputCallback != NULL)
+            {
+                (*mInputCallback)(mWindow);
+            }
+
+            // call draw
+            if (mDrawCall != NULL)
+            {
+                (*mDrawCall)(mContext);
+            }
+
+            // DrawMethod();
+
+            glfwSwapBuffers(mWindow);
+            glfwPollEvents();
+        }
+
+        glfwTerminate();
         return 0;
     }
 

@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 # 项目信息
 project(OpenGLStudyDemo)
 
-set(VERSION "0.1.4")
+set(VERSION "0.1.5")
 
 add_definitions("-Wall -g")
 
