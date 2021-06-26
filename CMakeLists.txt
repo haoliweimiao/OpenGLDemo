@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 # 项目信息
 project(OpenGLStudyDemo)
 
-set(VERSION "0.1.2")
+set(VERSION "0.1.3")
 
 add_definitions("-Wall -g")
 
@@ -26,5 +26,17 @@ include_directories(
 link_directories(
     ${PROJECT_SOURCE_DIR}/lib)
 
+# add_library(glfw STATIC IMPORTED)
+# set_property(TARGET glfw PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/lib/libglfw3.a ${PROJECT_SOURCE_DIR}/lib/libglfw3dll.a)
+
 # 输出 main.exe 与 vscode 配置保持一致，即可进行调试
 add_executable(main src/main.cpp)
+
+target_link_libraries(
+    # 项目名称
+    main 
+    # 链接的静态库
+    libglfw3.a 
+    libglfw3dll.a 
+    libglad.a
+    )
