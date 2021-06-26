@@ -2,6 +2,7 @@
 
 #include <study/draw_create_window.h>
 #include <study/draw_first_triangle.h>
+#include <study/draw_rectangle_with_vao.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -29,7 +30,8 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 int main()
 {
 	// DrawCreateWindow window;
-	DrawFirstTriangle window;
+	// DrawFirstTriangle window;
+	DrawRectangleWithVAO window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
 	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);

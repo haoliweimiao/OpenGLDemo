@@ -31,6 +31,9 @@ extern "C"
 
     typedef void (*DrawCall)(OpenGLContext);
 
+    // Destroy and recycler resource
+    typedef void (*Destory)(OpenGLContext);
+
     class BaseDraw
     {
     private:
@@ -38,19 +41,21 @@ extern "C"
         GLFWframebuffersizefun mBufferCallback = NULL;
         ProcessInputCallback mInputCallback = NULL;
         DrawCall mDrawCall = NULL;
+        Destory mDestroyMethod = NULL;
 
     public:
         BaseDraw();
         OpenGLContext mContext;
         int Init(int width, int height);
-        int InitOpenGL();
         GLFWwindow *getWindow();
         int Draw();
-        // int DrawMethod();
-        int Destory();
+        // 要实现绘制图像，以下方法必须实现
+        int InitOpenGL();
         void setFramebufferSizeCallback(GLFWframebuffersizefun callback);
+        // 监听回调，需要则设置
         void setProcessInputCallback(ProcessInputCallback callback);
         void setDrawMethod(DrawCall method);
+        void setDestroyMethod(Destory method);
         ~BaseDraw();
     };
 
@@ -126,10 +131,10 @@ extern "C"
         this->mDrawCall = method;
     }
 
-    // int BaseDraw::DrawMethod()
-    // {
-    //     return 0;
-    // }
+    void BaseDraw::setDestroyMethod(Destory method)
+    {
+        this->mDestroyMethod = method;
+    }
 
     int BaseDraw::Draw()
     {
@@ -153,13 +158,12 @@ extern "C"
             glfwPollEvents();
         }
 
-        glfwTerminate();
-        return 0;
-    }
+        if (mDestroyMethod != NULL)
+        {
+            (*mDestroyMethod)(mContext);
+        }
 
-    int BaseDraw::Destory()
-    {
-        // destory
+        glfwTerminate();
         return 0;
     }
 
