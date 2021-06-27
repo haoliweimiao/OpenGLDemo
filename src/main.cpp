@@ -4,6 +4,7 @@
 #include <study/draw_first_triangle.h>
 #include <study/draw_rectangle_with_vao.h>
 #include <study/draw_color_triangle.h>
+#include <study/draw_texture.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -33,7 +34,8 @@ int main()
 	// DrawCreateWindow window;
 	// DrawFirstTriangle window;
 	// DrawRectangleWithVAO window;
-	DrawColorTriangle window;
+	// DrawColorTriangle window;
+	DrawTexture window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
 	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);

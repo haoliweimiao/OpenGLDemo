@@ -53,10 +53,11 @@ extern "C"
         int Draw();
         // 要实现绘制图像，以下方法必须实现
         int InitOpenGL();
-        void setFramebufferSizeCallback(GLFWframebuffersizefun callback);
-        // 监听回调，需要则设置
-        void setProcessInputCallback(ProcessInputCallback callback);
         void setDrawMethod(DrawCall method);
+        // 监听回调，需要则设置
+        void setFramebufferSizeCallback(GLFWframebuffersizefun callback);
+        void setProcessInputCallback(ProcessInputCallback callback);
+        // 销毁 OpenGL 程序会调用该方法，在此方法释放资源
         void setDestroyMethod(Destory method);
         ~BaseDraw();
     };
