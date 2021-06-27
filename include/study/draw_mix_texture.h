@@ -1,14 +1,14 @@
 //
-// @description: Draw Texture
+// @description: Draw mix texture demo
 // @author: von.wu
-// @date: 2021-06-27 10:09:08
+// @date: 2021-06-27 16:04:35
 //
 
-#ifndef DRAW_TEXTURE_H
-#define DRAW_TEXTURE_H
+#ifndef DRAW_MIX_TEXTURE_DEMO
+#define DRAW_MIX_TEXTURE_DEMO
 
-#include <utils/file_utils.h>
-#include "stb/stb_include.h"
+#include "utils/texture_utils.h"
+#include "utils/file_utils.h"
 #include "base_draw.h"
 #include "shader.h"
 
@@ -21,20 +21,23 @@ extern "C"
     typedef struct
     {
         GLuint VBO, VAO, EBO;
-        GLuint texture;
+        GLuint texture1, texture2;
         Shader *ourShader;
-    } UserDataDrawTexture;
+    } UserDataDrawMixTexture;
 
-    void DrawTextureMethod(OpenGLContext context)
+    void DrawMixTextureMethod(OpenGLContext context)
     {
-        UserDataDrawTexture *userData = (UserDataDrawTexture *)context.userData;
+        UserDataDrawMixTexture *userData = (UserDataDrawMixTexture *)context.userData;
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // bind Texture
-        glBindTexture(GL_TEXTURE_2D, userData->texture);
+        // bind textures on corresponding texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, userData->texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, userData->texture2);
 
         // render container
         userData->ourShader->use();
@@ -43,9 +46,9 @@ extern "C"
         glBindVertexArray(0);
     }
 
-    void DrawTextureDestoryMethod(OpenGLContext context)
+    void DrawMixTextureDestoryMethod(OpenGLContext context)
     {
-        UserDataDrawTexture *userData = (UserDataDrawTexture *)context.userData;
+        UserDataDrawMixTexture *userData = (UserDataDrawMixTexture *)context.userData;
 
         // optional: de-allocate all resources once they've outlived their purpose:
         // ------------------------------------------------------------------------
@@ -56,30 +59,32 @@ extern "C"
         delete userData->ourShader;
     }
 
-    class DrawTexture : public BaseDraw
+    class DrawMixTexture : public BaseDraw
     {
     private:
         /* data */
     public:
-        DrawTexture(/* args */);
+        DrawMixTexture(/* args */);
         int InitOpenGL();
-        ~DrawTexture();
+        ~DrawMixTexture();
     };
 
-    DrawTexture::DrawTexture(/* args */)
+    DrawMixTexture::DrawMixTexture(/* args */)
     {
     }
 
-    DrawTexture::~DrawTexture()
+    DrawMixTexture::~DrawMixTexture()
     {
     }
 
-    int DrawTexture::InitOpenGL()
+    int DrawMixTexture::InitOpenGL()
     {
-        mContext.userData = malloc(sizeof(UserDataDrawTexture));
+        // build and compile our shader zprogram
+        // ------------------------------------
+        mContext.userData = malloc(sizeof(UserDataDrawMixTexture));
 
-        UserDataDrawTexture *userData = (UserDataDrawTexture *)mContext.userData;
-        userData->ourShader = new Shader("glsl/4.1.texture.vs", "glsl/4.1.texture.fs");
+        UserDataDrawMixTexture *userData = (UserDataDrawMixTexture *)mContext.userData;
+        userData->ourShader = new Shader("glsl/4.2.texture.vs", "glsl/4.2.texture.fs");
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -117,46 +122,23 @@ extern "C"
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
-        // load and create a texture
-        // -------------------------
-        glGenTextures(1, &userData->texture);
-        glBindTexture(GL_TEXTURE_2D, userData->texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-        // set the texture wrapping parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        // set texture filtering parameters
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // load image, create texture and generate mipmaps
-        int width, height, nrChannels;
-        // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
+        userData->texture1 = createTexture("png/container.jpg");
+        userData->texture2 = createTexture("png/awesomeface.png");
+        // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
+        // -------------------------------------------------------------------------------------------
+        userData->ourShader->use(); // don't forget to activate/use the shader before setting uniforms!
+        // either set it manually like so:
+        glUniform1i(glGetUniformLocation(userData->ourShader->ID, "texture1"), 0);
+        // or set it via the texture class
+        userData->ourShader->setInt("texture2", 1);
 
-        char imagePath[256];
-        getFilePath("png/container.jpg", imagePath);
-        if (imagePath == NULL)
-        {
-            std::cout << "load image file failed !" << std::endl;
-            return -1;
-        }
+        BaseDraw::setDestroyMethod(DrawMixTextureDestoryMethod);
+        BaseDraw::setDrawMethod(DrawMixTextureMethod);
 
-        unsigned char *data = stbi_load(imagePath, &width, &height, &nrChannels, 0);
-        if (data)
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else
-        {
-            std::cout << "Failed to load texture" << std::endl;
-        }
-        stbi_image_free(data);
-
-        BaseDraw::setDestroyMethod(DrawTextureDestoryMethod);
-        BaseDraw::setDrawMethod(DrawTextureMethod);
         return 0;
     }
 
 #ifdef __cplusplus
 }
 #endif
-#endif // DRAW_TEXTURE_H
+#endif // DRAW_MIX_TEXTURE_DEMO

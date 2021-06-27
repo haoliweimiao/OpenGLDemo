@@ -8,6 +8,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <utils/file_utils.h>
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -31,9 +33,25 @@ extern "C"
             fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
             try
             {
+                char vertexCachePath[256];
+                getFilePath(vertexPath, vertexCachePath);
+                if (vertexCachePath == NULL)
+                {
+                    std::cout << "load vertex glsl file failed !" << std::endl;
+                    return;
+                }
+
+                char fragmentCachePath[256];
+                getFilePath(fragmentPath, fragmentCachePath);
+                if (fragmentCachePath == NULL)
+                {
+                    std::cout << "load fragment glsl file failed !" << std::endl;
+                    return;
+                }
+
                 // open files
-                vShaderFile.open(vertexPath);
-                fShaderFile.open(fragmentPath);
+                vShaderFile.open(vertexCachePath);
+                fShaderFile.open(fragmentCachePath);
                 std::stringstream vShaderStream, fShaderStream;
                 // read file's buffer contents into streams
                 vShaderStream << vShaderFile.rdbuf();

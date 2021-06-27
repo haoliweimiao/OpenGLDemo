@@ -75,14 +75,7 @@ extern "C"
         mContext.userData = malloc(sizeof(UserDataDrawColorTriangle));
 
         UserDataDrawColorTriangle *userData = (UserDataDrawColorTriangle *)mContext.userData;
-        userData->ourShader = new Shader("../glsl/3.3.shader.vs", "../glsl/3.3.shader.fs"); // you can name your shader files however you like
-
-        int programId = (int)userData->ourShader->ID;
-        if (programId == -1)
-        {
-            // F5 run in this project, glsl file need use this path
-            userData->ourShader = new Shader("./glsl/3.3.shader.vs", "./glsl/3.3.shader.fs");
-        }
+        userData->ourShader = new Shader("glsl/3.3.shader.vs", "glsl/3.3.shader.fs"); // you can name your shader
         userData->shaderProgram = userData->ourShader->ID;
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
