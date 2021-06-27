@@ -7,7 +7,8 @@
 #include <study/draw_texture.h>
 #include <study/draw_mix_texture.h>
 #include <study/draw_rotate_mix_texture.h>
-#include <study/draw_perspective_texture.h>
+#include <study/coordinate_systems/draw_perspective_texture.h>
+#include <study/coordinate_systems/draw_3d_box.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -41,7 +42,8 @@ int main()
 	// DrawTexture window;
 	// DrawMixTexture window;
 	// DrawRotateMixTexture window;
-	DrawPerspectiveTexture window;
+	// DrawPerspectiveTexture window;
+	Draw3DBox window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
 	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);

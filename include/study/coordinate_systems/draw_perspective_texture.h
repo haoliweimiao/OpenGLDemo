@@ -10,16 +10,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "utils/texture_utils.h"
-#include "utils/file_utils.h"
-#include "base_draw.h"
-#include "shader.h"
+#include <utils/texture_utils.h>
+#include <utils/file_utils.h>
+#include "../base_draw.h"
+#include "../shader.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-    // your code
     // your code
 
     typedef struct
