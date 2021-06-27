@@ -41,6 +41,8 @@ extern "C"
     private:
         GLFWwindow *mWindow;
         GLFWframebuffersizefun mBufferCallback = NULL;
+        GLFWcursorposfun mCursorCallback = NULL;
+        GLFWscrollfun mScrollCallback = NULL;
         ProcessInputCallback mInputCallback = NULL;
         DrawCall mDrawCall = NULL;
         Destory mDestroyMethod = NULL;
@@ -57,6 +59,8 @@ extern "C"
         // 监听回调，需要则设置
         void setFramebufferSizeCallback(GLFWframebuffersizefun callback);
         void setProcessInputCallback(ProcessInputCallback callback);
+        void setCursorposfun(GLFWcursorposfun callback);
+        void setScrollfun(GLFWscrollfun callback);
         // 销毁 OpenGL 程序会调用该方法，在此方法释放资源
         void setDestroyMethod(Destory method);
         ~BaseDraw();
@@ -105,6 +109,19 @@ extern "C"
             glfwSetFramebufferSizeCallback(mWindow, mBufferCallback);
         }
 
+        if (mCursorCallback != NULL)
+        {
+            glfwSetCursorPosCallback(mWindow, mCursorCallback);
+        }
+
+        if (mScrollCallback != NULL)
+        {
+            glfwSetScrollCallback(mWindow, mScrollCallback);
+        }
+
+        // tell GLFW to capture our mouse
+        glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
             std::cout << "Failed to initialize GLAD" << std::endl;
@@ -122,11 +139,33 @@ extern "C"
     void BaseDraw::setFramebufferSizeCallback(GLFWframebuffersizefun callback)
     {
         this->mBufferCallback = callback;
+        if (mBufferCallback != NULL)
+        {
+            glfwSetFramebufferSizeCallback(mWindow, mBufferCallback);
+        }
     }
 
     void BaseDraw::setProcessInputCallback(ProcessInputCallback callback)
     {
         this->mInputCallback = callback;
+    }
+
+    void BaseDraw::setCursorposfun(GLFWcursorposfun callback)
+    {
+        this->mCursorCallback = callback;
+        if (mCursorCallback != NULL)
+        {
+            glfwSetCursorPosCallback(mWindow, mCursorCallback);
+        }
+    }
+
+    void BaseDraw::setScrollfun(GLFWscrollfun callback)
+    {
+        this->mScrollCallback = callback;
+        if (mScrollCallback != NULL)
+        {
+            glfwSetScrollCallback(mWindow, mScrollCallback);
+        }
     }
 
     void BaseDraw::setDrawMethod(DrawCall method)

@@ -12,6 +12,7 @@
 #include <study/coordinate_systems/draw_more_3d_box.h>
 #include <study/camera/draw_camera_1.h>
 #include <study/camera/draw_camera_2.h>
+#include <study/camera/draw_camera_3.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -49,7 +50,8 @@ int main()
 	// Draw3DBox window;
 	// DrawMore3DBox window;
 	// DrawCamera1 window;
-	DrawCamera2 window;
+	// DrawCamera2 window;
+	DrawCamera3 window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
 	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);
