@@ -1,11 +1,11 @@
 //
-// @description: draw more 3d box in window
+// @description: Draw more 3D box, rotate camera view by time flow
 // @author: von.wu
-// @date: 2021-06-27 20:09:19
+// @date: 2021-06-27 21:40:19
 //
 
-#ifndef DRAW_MORE_3D_BOX_H
-#define DRAW_MORE_3D_BOX_H
+#ifndef DRAW_CAMERA_1_H
+#define DRAW_CAMERA_1_H
 // include something
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -25,11 +25,11 @@ extern "C"
         GLuint VBO, VAO;
         GLuint texture1, texture2;
         Shader *ourShader;
-    } UserDataDrawMore3DBox;
+    } UserDataDrawCamera1;
 
-    void DrawMore3DBoxMethod(OpenGLContext context)
+    void DrawCamera1Method(OpenGLContext context)
     {
-        UserDataDrawMore3DBox *userData = (UserDataDrawMore3DBox *)context.userData;
+        UserDataDrawCamera1 *userData = (UserDataDrawCamera1 *)context.userData;
         Shader *ourShader = userData->ourShader;
         // render
         // ------
@@ -46,25 +46,22 @@ extern "C"
         // activate shader
         ourShader->use();
 
-        // GLuint programId = userData->ourShader->ID;
-        // create transformations
+        // camera/view transformation
         glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)context.mScreenWidth / (float)context.mScreenHeight, 0.1f, 100.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
+        float radius = 10.0f;
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
+        view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
         ourShader->setMat4("view", view);
-        ourShader->setMat4("projection", projection);
 
-        // render box
+        // render boxes
         glBindVertexArray(userData->VAO);
-        double nowTime = glfwGetTime();
         for (unsigned int i = 0; i < 10; i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * (i + 1) * nowTime;
+            float angle = 20.0f * i;
             model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
             ourShader->setMat4("model", model);
 
@@ -73,9 +70,9 @@ extern "C"
         glBindVertexArray(0);
     }
 
-    void DrawMore3DBoxDestoryMethod(OpenGLContext context)
+    void DrawCamera1DestoryMethod(OpenGLContext context)
     {
-        UserDataDrawMore3DBox *userData = (UserDataDrawMore3DBox *)context.userData;
+        UserDataDrawCamera1 *userData = (UserDataDrawCamera1 *)context.userData;
 
         // optional: de-allocate all resources once they've outlived their purpose:
         // ------------------------------------------------------------------------
@@ -85,34 +82,34 @@ extern "C"
         delete userData->ourShader;
     }
 
-    class DrawMore3DBox : public BaseDraw
+    class DrawCamera1 : public BaseDraw
     {
     private:
         /* data */
     public:
-        DrawMore3DBox(/* args */);
+        DrawCamera1(/* args */);
         int InitOpenGL();
-        ~DrawMore3DBox();
+        ~DrawCamera1();
     };
 
-    DrawMore3DBox::DrawMore3DBox(/* args */)
+    DrawCamera1::DrawCamera1(/* args */)
     {
     }
 
-    DrawMore3DBox::~DrawMore3DBox()
+    DrawCamera1::~DrawCamera1()
     {
     }
 
-    int DrawMore3DBox::InitOpenGL()
+    int DrawCamera1::InitOpenGL()
     {
         // 绘制3D图形需要开启深度测试，否则有伪像出现
         glEnable(GL_DEPTH_TEST);
         // build and compile our shader zprogram
         // ------------------------------------
-        mContext.userData = malloc(sizeof(UserDataDrawMore3DBox));
+        mContext.userData = malloc(sizeof(UserDataDrawCamera1));
 
-        UserDataDrawMore3DBox *userData = (UserDataDrawMore3DBox *)mContext.userData;
-        userData->ourShader = new Shader("glsl/6.3.coordinate_systems.vs", "glsl/6.3.coordinate_systems.fs");
+        UserDataDrawCamera1 *userData = (UserDataDrawCamera1 *)mContext.userData;
+        userData->ourShader = new Shader("glsl/7.1.camera.vs", "glsl/7.1.camera.fs");
 
         // set up vertex data (and buffer(s)) and configure vertex attributes
         // ------------------------------------------------------------------
@@ -176,20 +173,22 @@ extern "C"
 
         userData->texture1 = createTexture("png/container.jpg");
         userData->texture2 = createTexture("png/awesomeface.png");
-        // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-        // -------------------------------------------------------------------------------------------
-        userData->ourShader->use(); // don't forget to activate/use the shader before setting uniforms!
-        // either set it manually like so:
-        glUniform1i(glGetUniformLocation(userData->ourShader->ID, "texture1"), 0);
-        // or set it via the texture class
+
+        userData->ourShader->use();
+        userData->ourShader->setInt("texture1", 0);
         userData->ourShader->setInt("texture2", 1);
 
-        BaseDraw::setDestroyMethod(DrawMore3DBoxDestoryMethod);
-        BaseDraw::setDrawMethod(DrawMore3DBoxMethod);
+        // pass projection matrix to shader (as projection matrix rarely changes there's no need to do this per frame)
+        // -----------------------------------------------------------------------------------------------------------
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)mContext.mScreenWidth / (float)mContext.mScreenHeight, 0.1f, 100.0f);
+        userData->ourShader->setMat4("projection", projection);
+
+        BaseDraw::setDestroyMethod(DrawCamera1DestoryMethod);
+        BaseDraw::setDrawMethod(DrawCamera1Method);
 
         return 0;
     }
 #ifdef __cplusplus
 }
 #endif
-#endif // DRAW_MORE_3D_BOX_H
+#endif // DRAW_CAMERA_1_H
