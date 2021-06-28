@@ -8,6 +8,7 @@
 #define CONFIG_H
 
 #include <glm/glm.hpp>
+#include "camera.h"
 
 // include something
 #ifdef __cplusplus
@@ -15,6 +16,9 @@ extern "C"
 {
 #endif
     // your code
+    const unsigned int SCR_WIDTH = 800;
+    const unsigned int SCR_HEIGHT = 600;
+
     // world space positions of our cubes
     glm::vec3 cubePositions[] = {
         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -32,17 +36,21 @@ extern "C"
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
     bool firstMouse = true;
     float yaw = -90.0f; // yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
     float pitch = 0.0f;
-    float lastX = 800.0f / 2.0;
-    float lastY = 600.0 / 2.0;
+    float lastX = SCR_WIDTH / 2.0f;
+    float lastY = SCR_HEIGHT / 2.0f;
     float fov = 45.0f;
 
     // timing
     float deltaTime = 0.0f; // time between current frame and last frame
     float lastFrame = 0.0f;
+
+    // lighting
+    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 #ifdef __cplusplus
 }
 #endif
