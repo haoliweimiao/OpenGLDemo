@@ -15,6 +15,7 @@
 #include <study/camera/draw_camera_2.h>
 #include <study/camera/draw_camera_3.h>
 #include <study/color/draw_color.h>
+#include <study/basic_lighting/draw_basic_lighting.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -67,7 +68,8 @@ int main()
 	// DrawCamera1 window;
 	// DrawCamera2 window;
 	// DrawCamera3 window;
-	DrawColor window;
+	// DrawColor window;
+	DrawBasicLighting window;
 	window.setFramebufferSizeCallback(framebuffer_size_callback);
 	window.setProcessInputCallback(processInput);
 	int ret = window.Init(SCR_WIDTH, SCR_HEIGHT);
